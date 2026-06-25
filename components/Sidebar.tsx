@@ -31,10 +31,10 @@ export function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`group relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 ${
+              className={`group relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors duration-200 ${
                 isActive
-                  ? 'border-l-2 border-[var(--color-accent)] bg-[var(--color-accent)]/10 text-[var(--color-accent)]'
-                  : 'border-l-2 border-transparent text-[var(--color-text-2)] hover:bg-[var(--color-surface-2)] hover:text-[var(--color-text-1)]'
+                  ? 'bg-[var(--color-surface-2)] text-[var(--color-text-1)] shadow-sm'
+                  : 'text-[var(--color-text-2)] hover:bg-[var(--color-surface-2)]/50 hover:text-[var(--color-text-1)]'
               }`}
             >
               <Icon className="size-4 shrink-0" />

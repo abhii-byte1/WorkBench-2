@@ -78,7 +78,10 @@ export default function UserDetailPage() {
 
       const updated: UserDetail = await res.json()
       setUser(updated)
-      toast.success(`Role assigned to ${updated.name}`)
+      const roleName = allRoles.find((r) => r.id === roleId)?.name ?? 'Role'
+      toast.success('Role assigned successfully', {
+        description: `"${roleName}" was assigned to ${updated.name}`
+      })
       setPopoverOpen(false)
 
       const rolesRes = await fetch('/api/roles')
@@ -87,9 +90,9 @@ export default function UserDetailPage() {
         setAllRoles(rolesData)
       }
     } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : 'Failed to assign role'
-      )
+      toast.error('Failed to assign role', {
+        description: err instanceof Error ? err.message : 'An unknown error occurred'
+      })
     } finally {
       setAssigningRoleId(null)
     }
@@ -111,11 +114,14 @@ export default function UserDetailPage() {
 
       const updated: UserDetail = await res.json()
       setUser(updated)
-      toast.success(`Role removed from ${updated.name}`)
+      const roleName = allRoles.find((r) => r.id === roleId)?.name ?? 'Role'
+      toast.success('Role removed successfully', {
+        description: `"${roleName}" was removed from ${updated.name}`
+      })
     } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : 'Failed to remove role'
-      )
+      toast.error('Failed to remove role', {
+        description: err instanceof Error ? err.message : 'An unknown error occurred'
+      })
     } finally {
       setRemovingRoleId(null)
     }
@@ -247,7 +253,7 @@ export default function UserDetailPage() {
             {user.roles.map((role) => (
               <div
                 key={role.id}
-                className="flex items-center justify-between rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-5 py-4 transition-colors hover:border-[var(--color-text-2)]/20"
+                className="flex items-center justify-between rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-5 py-4 transition-colors hover:bg-[var(--color-surface-2)]/30"
               >
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">

@@ -49,3 +49,18 @@ export interface UserDetail extends User {
   roles: Role[]
   effectivePermissions: EffectivePermission[]
 }
+
+export type ActivityType =
+  | 'role_created'
+  | 'role_updated'
+  | 'role_deleted'
+  | 'role_assigned'
+  | 'role_removed'
+
+export interface Activity {
+  id: string
+  type: ActivityType
+  targetName: string
+  userName?: string
+  timestamp: string
+}

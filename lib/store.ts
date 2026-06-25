@@ -1,8 +1,9 @@
-import { Role, User } from './types'
+import { Role, User, Activity } from './types'
 
 interface Store {
   roles: Role[]
   users: User[]
+  activities: Activity[]
 }
 
 function createStore(): Store {
@@ -115,7 +116,9 @@ function createStore(): Store {
     },
   ]
 
-  return { roles, users }
+  const activities: Activity[] = []
+
+  return { roles, users, activities }
 }
 
 const store = createStore()
@@ -209,4 +212,18 @@ export function unassignRoleFromUser(
 
   user.roleIds = user.roleIds.filter((rid) => rid !== roleId)
   return { success: true }
+}
+
+export function getActivities(): Activity[] {
+  return [...store.activities].sort(
+    (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+  )
+}
+
+export function logActivity(activity: Omit<Activity, 'id' | 'timestamp'>) {
+  store.activities.push({
+    ...activity,
+    id: `act-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    timestamp: new Date().toISOString(),
+  })
 }

@@ -26,16 +26,16 @@ export function RoleCard({ role, onEdit, onDuplicate, onDelete }: RoleCardProps)
 
   return (
     <TooltipProvider>
-      <div className="group rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6 transition-all duration-200 hover:border-[var(--color-text-2)]/30">
+      <div className="group rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6 transition-colors duration-200 hover:bg-[var(--color-surface-2)]/30">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0 flex-1 space-y-1">
             <div className="flex items-center gap-2">
               <h3 className="truncate font-semibold text-[var(--color-text-1)]">
                 {role.name}
               </h3>
-              {role.isDefault && <Badge variant="secondary">Default</Badge>}
+              {role.isDefault && <Badge variant="secondary" className="bg-[var(--color-surface-2)]">Default</Badge>}
             </div>
-            <p className="text-sm text-muted-foreground line-clamp-2">
+            <p className="text-sm text-[var(--color-text-2)] line-clamp-2">
               {role.description}
             </p>
           </div>
@@ -87,8 +87,8 @@ export function RoleCard({ role, onEdit, onDuplicate, onDelete }: RoleCardProps)
           </div>
         </div>
 
-        <div className="mt-4 flex flex-wrap items-center gap-2">
-          <Badge variant="outline">
+        <div className="mt-5 flex flex-wrap items-center gap-2">
+          <Badge variant="outline" className="border-[var(--color-border)] text-[var(--color-text-2)]">
             {role.permissions.length} permission{role.permissions.length !== 1 ? 's' : ''}
           </Badge>
           {coveredResources.map((resource) => (

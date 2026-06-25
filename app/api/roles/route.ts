@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getRoles, createRole, isRoleNameTaken } from '@/lib/store'
+import { getRoles, createRole, isRoleNameTaken, logActivity } from '@/lib/store'
 import type { Permission } from '@/lib/types'
 
 export async function GET() {
@@ -39,6 +39,11 @@ export async function POST(request: NextRequest) {
       name: body.name.trim(),
       description: body.description ?? '',
       permissions: body.permissions ?? [],
+    })
+
+    logActivity({
+      type: 'role_created',
+      targetName: role.name,
     })
 
     return NextResponse.json(role, { status: 201 })

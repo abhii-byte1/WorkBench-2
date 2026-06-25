@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { PermissionMatrix } from '@/components/PermissionMatrix'
 import { Button } from '@/components/ui/button'
-import { ArrowLeft, Loader2 } from 'lucide-react'
+import { ArrowLeft, Loader2, Check, ChevronDown } from 'lucide-react'
 import { toast } from 'sonner'
 import type { Permission, Role } from '@/lib/types'
 import Link from 'next/link'
@@ -22,6 +22,7 @@ export default function RoleEditorPage() {
   const [saving, setSaving] = useState(false)
   const [nameError, setNameError] = useState<string | null>(null)
   const [fetchError, setFetchError] = useState<string | null>(null)
+  const [summaryOpen, setSummaryOpen] = useState(false)
 
   const fetchRole = useCallback(async () => {
     if (isNew) return
@@ -100,12 +101,14 @@ export default function RoleEditorPage() {
         throw new Error('Failed to save role')
       }
 
-      toast.success(isNew ? 'Role created' : 'Role updated')
+      toast.success(isNew ? 'Role created successfully' : 'Role updated successfully', {
+        description: `"${body.name}" has been saved`
+      })
       router.push('/roles')
     } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : 'Failed to save role'
-      )
+      toast.error('Failed to save role', {
+        description: err instanceof Error ? err.message : 'An unknown error occurred'
+      })
     } finally {
       setSaving(false)
     }
@@ -155,8 +158,9 @@ export default function RoleEditorPage() {
         </h1>
       </div>
 
-      <div className="space-y-6">
-        <div className="max-w-md space-y-4">
+      <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-3">
+        <div className="space-y-6 lg:col-span-2">
+          <div className="max-w-md space-y-4">
           <div className="space-y-2">
             <label
               htmlFor="role-name"
@@ -209,7 +213,7 @@ export default function RoleEditorPage() {
               Permissions
             </h2>
             <span className="text-sm text-[var(--color-text-2)]">
-              {permissions.length} of 22 permissions selected
+              {permissions.length} of 19 permissions selected
             </span>
           </div>
           <PermissionMatrix
@@ -231,13 +235,58 @@ export default function RoleEditorPage() {
             {saving && <Loader2 className="size-4 animate-spin" data-icon="inline-start" />}
             Save Role
           </Button>
-          <Button
+            <Button
             variant="outline"
             onClick={() => router.push('/roles')}
             disabled={saving}
           >
             Cancel
           </Button>
+        </div>
+        </div>
+
+        <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] lg:sticky lg:top-8">
+          <div
+            className="flex cursor-pointer items-center justify-between p-5 lg:cursor-default"
+            onClick={() => setSummaryOpen(!summaryOpen)}
+          >
+            <h3 className="font-semibold text-[var(--color-text-1)]">
+              Live Summary
+            </h3>
+            <ChevronDown
+              className={`size-4 text-[var(--color-text-2)] transition-transform lg:hidden ${
+                summaryOpen ? 'rotate-180' : ''
+              }`}
+            />
+          </div>
+          <div
+            className={`border-t border-[var(--color-border)] p-5 pt-4 ${
+              summaryOpen ? 'block' : 'hidden lg:block'
+            }`}
+          >
+            <p className="mb-4 text-sm text-[var(--color-text-2)]">
+              This role grants:
+            </p>
+            {permissions.length === 0 ? (
+              <div className="rounded-lg border border-dashed border-[var(--color-border)] p-4 text-center text-sm text-[var(--color-text-2)]">
+                No permissions selected
+              </div>
+            ) : (
+              <div className="max-h-[500px] space-y-2.5 overflow-y-auto pr-2">
+                {permissions.map((perm) => (
+                  <div
+                    key={`${perm.resource}-${perm.action}`}
+                    className="flex items-start gap-2.5"
+                  >
+                    <Check className="mt-0.5 size-4 shrink-0 text-[var(--color-success)]" />
+                    <p className="text-sm font-medium capitalize text-[var(--color-text-1)]">
+                      {perm.action.replace('_', ' ')} {perm.resource}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getRoleById, updateRole, deleteRole, isRoleNameTaken } from '@/lib/store'
+import { getRoleById, updateRole, deleteRole, isRoleNameTaken, logActivity } from '@/lib/store'
 import type { Permission } from '@/lib/types'
 
 type RouteParams = { params: Promise<{ id: string }> }
@@ -69,6 +69,13 @@ export async function PUT(
       ...(body.permissions !== undefined && { permissions: body.permissions }),
     })
 
+    if (updated) {
+      logActivity({
+        type: 'role_updated',
+        targetName: updated.name,
+      })
+    }
+
     return NextResponse.json(updated)
   } catch {
     return NextResponse.json(
@@ -108,6 +115,11 @@ export async function DELETE(
         { status: 400 }
       )
     }
+
+    logActivity({
+      type: 'role_deleted',
+      targetName: role.name,
+    })
 
     return new NextResponse(null, { status: 204 })
   } catch {

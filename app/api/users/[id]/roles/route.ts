@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { assignRoleToUser, unassignRoleFromUser, getRoleById, getUserById } from '@/lib/store'
+import { assignRoleToUser, unassignRoleFromUser, getRoleById, getUserById, logActivity } from '@/lib/store'
 import { buildUserDetail } from '@/app/api/users/[id]/route'
 
 type RouteParams = { params: Promise<{ id: string }> }
@@ -45,6 +45,12 @@ export async function POST(
       )
     }
 
+    logActivity({
+      type: 'role_assigned',
+      targetName: role.name,
+      userName: user.name,
+    })
+
     const userDetail = buildUserDetail(id)
     return NextResponse.json(userDetail)
   } catch {
@@ -79,6 +85,7 @@ export async function DELETE(
       )
     }
 
+    const role = getRoleById(body.roleId)
     const result = unassignRoleFromUser(id, body.roleId)
 
     if (!result.success) {
@@ -86,6 +93,14 @@ export async function DELETE(
         { error: result.error },
         { status: 400 }
       )
+    }
+
+    if (role) {
+      logActivity({
+        type: 'role_removed',
+        targetName: role.name,
+        userName: user.name,
+      })
     }
 
     const userDetail = buildUserDetail(id)
